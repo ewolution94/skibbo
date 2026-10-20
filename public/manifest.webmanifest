@@ -2,7 +2,7 @@
   "id": "/",
   "name": "Skibbo",
   "short_name": "Skibbo",
-  "description": "Das Kartenspiel mit dem Vorrat, allein gegen Bots oder mit Freunden am Tisch.",
+  "description": "Das Kartenspiel mit dem eigenen Stapel, allein gegen Bots oder mit Freunden am Tisch.",
   "lang": "de",
   "start_url": "/",
   "scope": "/",
