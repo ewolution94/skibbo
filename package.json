@@ -1,0 +1,28 @@
+{
+  "name": "skibbo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Our own take on the stock-pile card game for the afternoon meeting, alone against bots or at a table with friends: enamel number plates built into four streets from 1 to 12, laid out for tablets first.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "node server/server.mjs",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/barlow-semi-condensed": "^5.2.6",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@tsconfig/svelte": "^5.0.8",
+    "svelte": "^5.57.1",
+    "svelte-check": "^4.7.6",
+    "typescript": "^6.0.3",
+    "uqr": "^0.1.3",
+    "vite": "^8.3.1"
+  }
+}
