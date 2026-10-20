@@ -497,50 +497,6 @@ test('a view shows its own hand, every stock top and discard pile, the piles\' t
   assert.deepEqual(R.view(s, 7).hand, []);
 });
 
-/**
- * Every leaf of a view, with its path (indices as *), so a test can say what each may hold: card ids
- * only where cards may show, everything else a known count or flag.
- * @param {unknown} x  @param {string} [path]  @param {[string, unknown][]} [out]
- */
-function leaves(x, path = '', out = []) {
-  if (x !== null && typeof x === 'object') {
-    for (const [k, v] of Object.entries(x)) leaves(v, path ? `${path}.${Array.isArray(x) ? '*' : k}` : k, out);
-  } else out.push([path, x]);
-  return out;
-}
-const CARD_PATHS = new Set(['build.*.top', 'seats.*.stockTop', 'seats.*.discards.*.*', 'hand.*']);
-const OTHER_PATHS = new Set([
-  'you', 'players', 'rules.stock', 'rules.teams', 'rules.target', 'teams', 'teams.*.*', 'round', 'first', 'turn', 'turnNo', 'phase',
-  'draw', 'done', 'build.*.n', 'seats.*.stock', 'seats.*.hand', 'scores.*', 'result', 'result.winner', 'result.team',
-  'result.points', 'result.left.*',
-]);
-
-test('no view ever shows another hand, a stock card below the top, the draw pile or the finished piles', () => {
-  for (const [players, rules] of /** @type {[number, Record<string, unknown>][]} */ ([[2, {}], [3, { stock: 10 }], [4, { teams: true }], [5, {}], [6, { teams: true, stock: 10 }]])) {
-    const randomInt = seeded(players * 31);
-    const s = R.createGame({ players, rules, randomInt });
-    for (let n = 0; n < 600 && s.phase === 'play'; n++) {
-      for (const seat of [...Array(players).keys(), null]) {
-        const v = R.view(s, seat);
-        const allowed = new Set([
-          ...(seat === null ? [] : s.seats[seat].hand),
-          ...s.seats.flatMap((x) => [...x.discards.flat(), ...x.stock.slice(-1)]),
-          ...s.build.flatMap((p) => p.slice(-1)),
-        ]);
-        for (const [path, val] of leaves(v)) {
-          if (CARD_PATHS.has(path)) {
-            if (val !== null) assert.ok(allowed.has(/** @type {number} */ (val)), `seat ${seat} sees card ${val} at ${path}`);
-          } else assert.ok(OTHER_PATHS.has(path), `unknown field ${path} in the view`);
-        }
-      }
-      // Random play that keeps the game moving: a play when there is one, two times in three.
-      const all = R.moves(s, s.turn);
-      const plays = all.filter((m) => m.type === 'play');
-      const pool = plays.length && randomInt(3) ? plays : all.filter((m) => m.type !== 'play');
-      R.act(s, s.turn, pool[randomInt(pool.length)], { randomInt });
-    }
-  }
-});
 
 test('standings: best first, equal scores share a place', () => {
   const s = arrange({ players: 4 });

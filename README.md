@@ -78,7 +78,8 @@ Node 24, no other runtime.
 ```
 npm install
 npm run dev          # the page and the game server on one port (6810), with hot reload
-npm test             # the rules, the bots, the rooms, the avatars
+npm test             # the unit tests: the rules, the bots and the rooms on fixed deals (CI runs these)
+npm run test:sim     # the simulated games: whole games by bots and random players, honesty, the bots' timing and ranks (local only)
 npm run check        # svelte-check
 npm run build && npm start -- --port 6811    # the production server with the built page
 node tools/ladder.mjs 400                    # the bots' ranks against each other
@@ -88,7 +89,7 @@ node tools/ladder.mjs 400                    # the bots' ranks against each othe
 
 This mirrors Würfle and Stammtisch:
 
-- `ci.yml` runs the typecheck, the tests and the build, then smoke-tests the production server: the
+- `ci.yml` runs the typecheck, the unit tests and the build, then smoke-tests the production server: the
   page and its headers, a table with a guest and a bot, each page's own hand and no other, a move
   refused out of turn and a discard taken.
 - `docker-publish.yml` gates on `ci.yml`, then pushes `ghcr.io/ewolution94/skibbo:latest` for
@@ -122,7 +123,7 @@ src/
   lib/table.ts   what fits where, the hand's places, your moves shown before the server answers
   lib/match.ts   what the table shows (a MatchView) and asks (a Driver), for a room or a game alone
   lib/solo.svelte.ts   a game alone in the page; lib/remote.ts the room's driver
-tests/           rules, bots, whole games, rooms
+tests/           *.test.mjs the unit tests (CI); *.sim.mjs the simulated games (`npm run test:sim`)
 tools/           ladder.mjs, qa.mjs, text-audit.mjs
 vendor/ewo/      Folio's tokens and elements (`npm run vendor -- skibbo` in folio); don't edit here
 ```
