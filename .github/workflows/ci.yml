@@ -72,9 +72,12 @@ jobs:
           test "$(post bot '{"add":true}')" = 204
           test "$(post settings '{"rules":{"stock":10,"target":500}}')" = 204
           test "$(post start '{}')" = 204
-          # Each page gets its own view: its own hand, the others' only as a count.
-          curl -s -N --max-time 2 "$base/api/rooms/$code/events?p=$hostId" > host.txt || true
-          curl -s -N --max-time 2 "$base/api/rooms/$code/events?p=$guestId" > guest.txt || true
+          # Each page gets its own view: its own hand, the others' only as a count. Both streams at once:
+          # a bot that starts plays its turn in about a second, and the next seat draws.
+          curl -s -N --max-time 2 "$base/api/rooms/$code/events?p=$hostId" > host.txt & h=$!
+          curl -s -N --max-time 2 "$base/api/rooms/$code/events?p=$guestId" > guest.txt & g=$!
+          # Only these two: a bare `wait` would wait for the server too, for ever.
+          wait $h $g || true
           grep -q '"phase":"play"' guest.txt
           view() { grep -m1 '^data: ' "$1" | sed 's/^data: //'; }
           view host.txt > host.json
@@ -85,7 +88,8 @@ jobs:
             if (host.seat === guest.seat) throw new Error("same seat");
             const theirs = new Set(guest.state.hand);
             if (host.state.hand.some((id) => theirs.has(id))) throw new Error("a hand in two views");
-            if (guest.state.seats[host.seat].hand !== host.state.hand.length) throw new Error("the count is off");
+            // Taken at the same moment (the same turn), the guest sees the hand of the host as its count.
+            if (host.state.turnNo === guest.state.turnNo && guest.state.seats[host.seat].hand !== host.state.hand.length) throw new Error("the count is off");
           '
           turn=$(node -pe 'JSON.parse(require("fs").readFileSync("host.json")).game.state.turn')
           seat=$(node -pe 'JSON.parse(require("fs").readFileSync("host.json")).game.seat')
