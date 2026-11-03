@@ -78,8 +78,11 @@
   .r3 {
     --enamel: #9f2294;
   }
+  /* What linear-gradient(135deg, #1d5fa0 0 34%, #23704f 34% 66%, #9f2294 66%) made, drawn in SVG:
+     the band edges at -45° through 34%/34% and 66%/66% of the plate. A slanted gradient's hard
+     stop draws as stairs, in Safari however soft (learnings/css-and-layout.md). */
   .joker {
-    --enamel: linear-gradient(135deg, #1d5fa0 0 34%, #23704f 34% 66%, #9f2294 66%);
+    --enamel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='%231d5fa0'/%3E%3Csvg x='34%25' y='34%25' overflow='visible'%3E%3Crect x='-9999' width='19998' height='9999' fill='%2323704f' transform='rotate(-45)'/%3E%3C/svg%3E%3Csvg x='66%25' y='66%25' overflow='visible'%3E%3Crect x='-9999' width='19998' height='9999' fill='%239f2294' transform='rotate(-45)'/%3E%3C/svg%3E%3C/svg%3E");
   }
   .back {
     --enamel: #1d2f5e;
